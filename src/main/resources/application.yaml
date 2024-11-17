@@ -1,0 +1,30 @@
+spring:
+  data:
+    mongodb:
+      database: ced
+      uri: >-
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    com.github.bucket4j: DEBUG
+    com.ced: DEBUG
+
+cors:
+  allowed-origins:
+    - https://ced.discloud.app
+    - http://localhost:4200
+
+
+rate-limit:
+  cache:
+    expire-after-access: 1h
+    maximum-size: 1000
+  bandwidth:
+    capacity: 100
+    refill-interval: 1m
+    refill-tokens: 100
