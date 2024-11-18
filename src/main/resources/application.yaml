@@ -3,6 +3,9 @@ spring:
     mongodb:
       database: ced
       uri: >-
+        
+  banner:
+    location: classpath:banner.txt
 
 server:
   port: 8080
@@ -28,3 +31,6 @@ rate-limit:
     capacity: 100
     refill-interval: 1m
     refill-tokens: 100
+
+swagger:
+  server: http://localhost:8080
