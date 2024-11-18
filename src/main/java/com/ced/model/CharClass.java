@@ -37,7 +37,7 @@ public record CharClass(
         List<APIReference> subclasses,
         SpellCasting spellCasting,
         String url
-) {
+) implements Identifiable {
 
     public record SpellCasting(
             Integer level,

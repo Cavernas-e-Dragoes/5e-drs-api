@@ -41,7 +41,7 @@ public record Spell(
         List<APIReference> classes,
         List<APIReference> subclasses,
         String url
-) {
+) implements Identifiable {
 
     public record Damage(
             Object damage_type,
