@@ -34,7 +34,7 @@ public record Race(
         List<APIReference> traits,
         List<APIReference> subRaces,
         String url
-) {
+) implements Identifiable {
     public record AbilityBonus(
             @Field("ability_score")
             APIReference abilityScore,
