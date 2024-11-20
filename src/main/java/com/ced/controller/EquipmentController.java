@@ -31,7 +31,7 @@ public class EquipmentController {
 
     @Operation(summary = "Retorna todos os Equipamentos")
     @GetMapping()
-    public ResponseEntity<Response> getAll(Pageable pageable) {
+    public ResponseEntity<Response> getAllEquips(Pageable pageable) {
         Page<Equipment> page = equipmentService.getAll(pageable);
         Response response = buildResponse(page, "/api/equipamentos/");
         return ResponseEntity.ok(response);
@@ -40,7 +40,7 @@ public class EquipmentController {
     @Operation(summary = "Retorna detalhes de um equipamento")
     @Parameter(name = "equipamento", description = "Identificador único de equipamento", example = "clava", required = true)
     @GetMapping("/{equipamento}")
-    public ResponseEntity<Equipment> getByIndex(@PathVariable String equipamento) {
+    public ResponseEntity<Equipment> getEquipsByIndex(@PathVariable String equipamento) {
         Optional<Equipment> equipment = equipmentService.getByIndex(equipamento);
         return equipment.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

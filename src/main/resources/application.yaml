@@ -1,9 +1,8 @@
 spring:
   data:
     mongodb:
-      database: ced
-      uri: >-
-        
+      database: ${MONGODB_DATABASE:local}
+      uri: ${MONGODB_URI:mongodb://localhost:27017}
   banner:
     location: classpath:banner.txt
 
@@ -22,7 +21,6 @@ cors:
     - https://ced.discloud.app
     - http://localhost:4200
 
-
 rate-limit:
   cache:
     expire-after-access: 1h
@@ -33,4 +31,4 @@ rate-limit:
     refill-tokens: 100
 
 swagger:
-  server: http://localhost:8080
+  server: ${SWAGGER_SERVER:http://localhost:8080}

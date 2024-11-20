@@ -3,9 +3,11 @@ package com.ced.service;
 import com.ced.cache.GenericCache;
 import com.ced.model.CharClass;
 import com.ced.model.Equipment;
+import com.ced.model.EquipmentCategory;
 import com.ced.model.Race;
 import com.ced.model.Spell;
 import com.ced.repository.ClassesRepository;
+import com.ced.repository.EquipsCategoryRepository;
 import com.ced.repository.EquipsRepository;
 import com.ced.repository.RacesRepository;
 import com.ced.repository.SpellsRepository;
@@ -28,16 +30,19 @@ public class DataLoader {
     private final GenericCache<Race> raceCache;
     private final GenericCache<CharClass> classCache;
     private final GenericCache<Equipment> equipmentCache;
+    private final GenericCache<EquipmentCategory> equipmentCategoryCache;
 
     public DataLoader(SpellsRepository spellsRepository,
                       RacesRepository racesRepository,
                       ClassesRepository classesRepository,
-                      EquipsRepository equipsRepository) {
+                      EquipsRepository equipsRepository,
+                      EquipsCategoryRepository equipsCategoryRepository) {
 
         this.spellCache = new GenericCache<>(spellsRepository, LOGGER, "magia");
         this.raceCache = new GenericCache<>(racesRepository, LOGGER, "raça");
         this.classCache = new GenericCache<>(classesRepository, LOGGER, "classe");
         this.equipmentCache = new GenericCache<>(equipsRepository, LOGGER, "equipamento");
+        this.equipmentCategoryCache = new GenericCache<>(equipsCategoryRepository, LOGGER, "categoriaDeEquipamento");
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -50,6 +55,7 @@ public class DataLoader {
         raceCache.loadData();
         classCache.loadData();
         equipmentCache.loadData();
+        equipmentCategoryCache.loadData();
     }
 
     public List<Spell> getAllSpells() {
@@ -82,6 +88,14 @@ public class DataLoader {
 
     public Optional<Equipment> getEquipmentsByIndex(String index) {
         return equipmentCache.getByIndex(index);
+    }
+
+    public List<EquipmentCategory> getAllEquipmentsCategory() {
+        return equipmentCategoryCache.getAll();
+    }
+
+    public Optional<EquipmentCategory> getEquipmentsCategoryByIndex(String index) {
+        return equipmentCategoryCache.getByIndex(index);
     }
 
     @Scheduled(cron = "0 0 * * * ?")

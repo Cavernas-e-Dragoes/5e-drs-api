@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RateLimitTest {
     private static final Logger logger = LoggerFactory.getLogger(RateLimitTest.class);
 
-    private static final String URL = "https://ced.discloud.app/api/magias/";
+    private static final String URL = "https://ced.discloud.app/api/magias";
 
     private static final int TOTAL_REQUESTS = 101;
 
