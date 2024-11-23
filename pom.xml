@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<commons-lang3.version>3.17.0</commons-lang3.version>
 		<caffeine.version>3.1.8</caffeine.version>
 		<springdoc-openapi.version>2.6.0</springdoc-openapi.version>
@@ -41,21 +40,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
 		</dependency>
 
 		<dependency>
@@ -85,7 +72,6 @@
 			<artifactId>bucket4j-core</artifactId>
 			<version>${bucket4j-core.version}</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>
