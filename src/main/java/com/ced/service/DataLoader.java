@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -98,7 +97,6 @@ public class DataLoader {
         return equipmentCategoryCache.getByIndex(index);
     }
 
-    @Scheduled(cron = "0 0 * * * ?")
     public void refreshData() {
         initializeData();
         LOGGER.info("Dados atualizados com sucesso.");
