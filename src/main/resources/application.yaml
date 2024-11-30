@@ -5,6 +5,8 @@ spring:
       uri: ${MONGODB_URI:mongodb://localhost:27017}
   banner:
     location: classpath:banner.txt
+  rabbitmq:
+    addresses: ${MQ_ADDRESSES:amqps://localhost:5672}
 
 server:
   port: 8080
@@ -20,6 +22,7 @@ cors:
   allowed-origins:
     - https://ced.discloud.app
     - http://localhost:4200
+    - https://cavernas-e-dragoes.web.app
 
 rate-limit:
   cache:
