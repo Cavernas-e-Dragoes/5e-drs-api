@@ -1,10 +1,9 @@
 package com.ced.service;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
-import com.ced.config.AmqpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MessageListener {
@@ -17,7 +16,7 @@ public class MessageListener {
         this.dataLoader = dataLoader;
     }
 
-    @RabbitListener(queues = AmqpConfig.QUEUE_NAME)
+    @RabbitListener(queues = "#{@dynamicQueueName}")
     public void handleMessage(String message) {
         LOGGER.info("Mensagem recebida da fila: {}", message);
         dataLoader.refreshData();

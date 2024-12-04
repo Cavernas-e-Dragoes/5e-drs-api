@@ -23,5 +23,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .exposedHeaders("Authorization", "Content-Disposition");
     }
-
 }
