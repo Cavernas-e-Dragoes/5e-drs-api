@@ -33,5 +33,10 @@ rate-limit:
     refill-interval: 1m
     refill-tokens: 100
 
+amqp:
+  exchange-name: ${EXCHANGE_NAME:xD}
+  queue-name: ${QUEUE_NAME:xD}
+  routing-key: ${ROUTING_KEY:xD}
+
 swagger:
   server: ${SWAGGER_SERVER:http://localhost:8080}

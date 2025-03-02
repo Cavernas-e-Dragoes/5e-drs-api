@@ -1,0 +1,106 @@
+name: Publish Discloud App - Mongo Service
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish-discloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4.6.0
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Find Build Artifact
+        id: find-artifact
+        run: echo "ARTIFACT_NAME=$(find target -name '*.jar' -type f | xargs -n 1 basename)" >> $GITHUB_ENV
+
+      - name: Prepare discloud.config
+        run: |
+          cp discloud/discloud.config target/
+          sed -i "s/APP_DISCLOUD_ID_PLACEHOLDER/${{ vars.APP_DISCLOUD_ID }}/g" target/discloud.config
+          sed -i "s/ARTIFACT_NAME_PLACEHOLDER/${{ env.ARTIFACT_NAME }}/g" target/discloud.config
+          cd target
+          echo "************************************"
+          echo "* File generated: discloud.config  *"
+          echo "************************************"
+          cat discloud.config
+
+      # Copia e ajusta o application.yaml
+      - name: Prepare application.yaml
+        run: |
+          cp discloud/application.yaml target/
+
+          # Função para escapar caracteres especiais antes de passar para o sed
+          escape_sed() { echo "$1" | sed 's/[\/&]/\\&/g'; }
+
+          MONGODB_DATABASE_ESCAPED=$(escape_sed "${{ secrets.MONGODB_DATABASE }}")
+          MONGODB_URI_ESCAPED=$(escape_sed "${{ secrets.MONGODB_URI }}")
+          MQ_ADDRESSES_ESCAPED=$(escape_sed "${{ secrets.MQ_ADDRESSES }}")
+          TOKEN_PASSWORD_ESCAPED=$(escape_sed "${{ secrets.TOKEN_PASSWORD }}")
+          TOKEN_EXPIRATION_ESCAPED=$(escape_sed "${{ secrets.TOKEN_EXPIRATION }}")
+          EXCHANGE_NAME_ESCAPED=$(escape_sed "${{ secrets.EXCHANGE_NAME }}")
+          QUEUE_NAME_ESCAPED=$(escape_sed "${{ secrets.QUEUE_NAME }}")
+          ROUTING_KEY_ESCAPED=$(escape_sed "${{ secrets.ROUTING_KEY }}")
+          SWAGGER_SERVER_ESCAPED=$(escape_sed "${{ secrets.SWAGGER_SERVER }}")
+
+          # Substituir os placeholders no application.yaml
+          sed -i "s/MONGODB_DATABASE_PLACEHOLDER/${MONGODB_DATABASE_ESCAPED}/g" target/application.yaml
+          sed -i "s/MONGODB_URI_PLACEHOLDER/${MONGODB_URI_ESCAPED}/g" target/application.yaml
+          sed -i "s/MQ_ADDRESSES_PLACEHOLDER/${MQ_ADDRESSES_ESCAPED}/g" target/application.yaml
+          sed -i "s/TOKEN_PASSWORD_PLACEHOLDER/${TOKEN_PASSWORD_ESCAPED}/g" target/application.yaml
+          sed -i "s/TOKEN_EXPIRATION_PLACEHOLDER/${TOKEN_EXPIRATION_ESCAPED}/g" target/application.yaml
+          sed -i "s/EXCHANGE_NAME_PLACEHOLDER/${EXCHANGE_NAME_ESCAPED}/g" target/application.yaml
+          sed -i "s/QUEUE_NAME_PLACEHOLDER/${QUEUE_NAME_ESCAPED}/g" target/application.yaml
+          sed -i "s/ROUTING_KEY_PLACEHOLDER/${ROUTING_KEY_ESCAPED}/g" target/application.yaml
+          sed -i "s/SWAGGER_SERVER_PLACEHOLDER/${SWAGGER_SERVER_ESCAPED}/g" target/application.yaml
+
+          cd target
+          echo "************************************"
+          echo "* File generated: application.yaml *"
+          echo "************************************"
+          cat application.yaml
+
+      - name: Create ZIP Package
+        run: |
+          cd target
+          zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
+
+      - name: UploadZip to Discloud - Send
+        id: upload-zip
+        uses: marco-quicula/discloud-api-action@v0.1.1
+        with:
+          discloud_api_token: ${{ secrets.DISCLOUD_API_TOKEN }}
+          command: 'upload-zip'
+          file: 'target/${{ vars.APP_DISCLOUD_ID }}.zip'
+          actionIfExists: 'DELETE'
+
+      - name: UploadZip to Discloud - Validate
+        run: |
+          # Decode the response body from Base64
+          response_body=$(echo "${{ steps.upload-zip.outputs.response_body }}" | base64 --decode)
+          
+          # Extract the "status" and "message" fields from the JSON
+          status=$(echo "$response_body" | jq -r '.status')
+          message=$(echo "$response_body" | jq -r '.message')
+          
+          # Validate the HTTP code and status
+          if [ "${{ steps.upload-zip.outputs.http_code }}" -ne 200 ] || [ "$status" != "ok" ]; then
+            echo "[ERROR] Error during upload. http_code=${{ steps.upload-zip.outputs.http_code }}, message=$message"
+            exit 1
+          else
+            echo "[SUCCESS] Upload executed successfully. Status: $status"
+          fi
+        shell: bash
