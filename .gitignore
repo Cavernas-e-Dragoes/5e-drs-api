@@ -26,6 +26,10 @@ cmake-build-*/
 # File-based project format
 *.iws
 
+#IDE VsCode
+
+.vscode/
+
 # IntelliJ
 out/
 
