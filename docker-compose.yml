@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: drsdb
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - drs_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - drs_network
+
+  # drs-api:
+  #   build: .
+  #   container_name: drs-api
+  #   depends_on:
+  #     - mongodb
+  #     - rabbitmq
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     SPRING_DATA_MONGODB_URI: mongodb://admin:admin@mongodb:27017/drsdb
+  #     SPRING_RABBITMQ_ADDRESSES: rabbitmq:5672
+  #     SPRING_RABBITMQ_USERNAME: guest
+  #     SPRING_RABBITMQ_PASSWORD: guest
+  #   networks:
+  #     - drs_network
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
+
+networks:
+  drs_network:
+    driver: bridge 

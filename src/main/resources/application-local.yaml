@@ -1,0 +1,60 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://admin:admin@localhost:27017/drsdb
+      database: drsdb
+  
+  rabbitmq:
+    addresses: localhost:5672
+    username: guest
+    password: guest
+  
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100,expireAfterAccess=60m
+
+token:
+  password: local_dev_secret
+  expiration: 86400
+
+mq:
+  exchange:
+    name: drs.exchange
+  queue:
+    name: drs.queue
+  routing:
+    key: drs.routingkey
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+  servers:
+    - url: http://localhost:8080
+    - description: Local Development Server
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: buckets
+      url: .*
+      rate-limits:
+        - bandwidths:
+            - capacity: 20
+              time: 1
+              unit: minutes
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true 
